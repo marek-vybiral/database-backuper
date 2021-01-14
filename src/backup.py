@@ -47,7 +47,6 @@ def compress(input_file_path, output_file_path):
     process.wait()
 
 
-
 def upload(file_name, s3_key, s3_secret, s3_endpoint, s3_region, s3_bucket):
     s = session.Session()
     client = s.client('s3',
