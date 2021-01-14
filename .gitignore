@@ -3,3 +3,4 @@
 .venv/
 .sql
 .gz
+__pycache__/
