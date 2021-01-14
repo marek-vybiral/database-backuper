@@ -3,7 +3,6 @@ import subprocess
 from datetime import datetime
 
 from boto3 import session
-from botocore.client import Config
 
 
 DUMP_ARGS = [
@@ -49,16 +48,16 @@ def compress(input_file_path, output_file_path):
 
 
 
-def upload(file_name, key_id, key_secret, endpoint, region, bucket):
+def upload(file_name, s3_key, s3_secret, s3_endpoint, s3_region, s3_bucket):
     s = session.Session()
     client = s.client('s3',
-        region_name=region,
-        endpoint_url=endpoint,
-        aws_access_key_id=key_id,
-        aws_secret_access_key=key_secret,
+        endpoint_url=s3_endpoint,
+        region_name=s3_region,
+        aws_access_key_id=s3_key,
+        aws_secret_access_key=s3_secret,
     )
 
-    client.upload_file(file_name, bucket, file_name)
+    client.upload_file(file_name, s3_bucket, file_name)
 
 
 def do_backup():
@@ -69,7 +68,7 @@ def do_backup():
 
     raw_dump = f'dump_{datetime_str}.sql'
     print(f'Dumping to {raw_dump}')
-    dump(raw_dump, *[os.environ[arg] for arg in DUMP_ARGS])
+    dump(raw_dump, **{k: os.environ[k] for k in DUMP_ARGS})
 
     compressed_dump = raw_dump + '.gz'
     print(f'Compressing')
@@ -78,7 +77,7 @@ def do_backup():
     os.remove(raw_dump)
 
     print(f'Uploading')
-    upload(compressed_dump, *[os.environ[arg] for arg in UPLOAD_ARGS])
+    upload(compressed_dump, **{k: os.environ[k] for k in UPLOAD_ARGS})
 
     os.remove(compressed_dump)
     print(f'Done')
