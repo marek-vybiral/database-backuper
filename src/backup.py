@@ -67,7 +67,7 @@ def do_backup():
 
     raw_dump = f'dump_{datetime_str}.sql'
     print(f'Dumping to {raw_dump}')
-    dump(raw_dump, **{k: os.environ[k] for k in DUMP_ARGS})
+    dump(raw_dump, **{k.lower(): os.environ[k] for k in DUMP_ARGS})
 
     compressed_dump = raw_dump + '.gz'
     print(f'Compressing')
@@ -76,7 +76,7 @@ def do_backup():
     os.remove(raw_dump)
 
     print(f'Uploading')
-    upload(compressed_dump, **{k: os.environ[k] for k in UPLOAD_ARGS})
+    upload(compressed_dump, **{k.lower(): os.environ[k] for k in UPLOAD_ARGS})
 
     os.remove(compressed_dump)
     print(f'Done')
